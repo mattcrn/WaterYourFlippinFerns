@@ -15,8 +15,13 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('App', require('./components/App.vue'));
+/* Vue.component('Plants', require('./components/Plants.vue')); */
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    data: {
+        plants: [{name: 'aloe-vera', water: 2, id: 1},
+        {name: 'basil', water: 3, id: 2},],
+    }
 });
