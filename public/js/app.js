@@ -47642,7 +47642,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = null
+var __vue_scopeId__ = "data-v-117390fa"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -47685,13 +47685,13 @@ var content = __webpack_require__(45);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(4)("c302be36", content, false, {});
+var update = __webpack_require__(4)("fe97e0f0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117390fa\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117390fa\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117390fa\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117390fa\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -47709,7 +47709,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n#app {\n  font-family: \"Avenir\", Helvetica, Arial, sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n  text-align: center;\n  color: #2c3e50;\n  margin-top: 60px;\n}\n", ""]);
+exports.push([module.i, "\n#app[data-v-117390fa] {\n  font-family: \"Avenir\", Helvetica, Arial, sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n  text-align: center;\n  color: #c8c8c8;\n  margin-top: 60px;\n}\n.c-button[data-v-117390fa] {\n  padding: 16px 26px;\n  border: none;\n  border-radius: 6px;\n  font-weight: bold;\n  text-transform: uppercase;\n  letter-spacing: 1px;\n  min-width: 200px;\n}\n.c-button--plant[data-v-117390fa] {\n    color: #1d1d1d;\n    background-color: #259e4d;\n}\n.c-button--water[data-v-117390fa] {\n  background-color: #2989b6;\n  color: #000;\n}\ni[data-v-117390fa]{\n  padding-right: 10px;\n}\n", ""]);
 
 // exports
 
@@ -47763,15 +47763,50 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 function Plant(_ref) {
   var id = _ref.id,
       water = _ref.water,
-      name = _ref.name;
+      name = _ref.name,
+      water_interval = _ref.water_interval,
+      water_next = _ref.water_next;
 
   this.id = id;
   this.water = water;
   this.name = name;
+  this.water_interval = water_interval;
+  this.water_next = water_next;
 }
 
 
@@ -47780,6 +47815,8 @@ function Plant(_ref) {
   name: "app",
   data: function data() {
     return {
+      addNew: false,
+      plant: { name: "", water: "", water_interval: "" },
       plants: this.initialPlants
     };
   },
@@ -47788,20 +47825,54 @@ function Plant(_ref) {
     PlantList: __WEBPACK_IMPORTED_MODULE_0__PlantList_vue___default.a,
     PlantItem: __WEBPACK_IMPORTED_MODULE_1__PlantItem_vue___default.a
   },
+  computed: {
+    wateredPlants: function wateredPlants() {
+      var filterdPlants = new Array();
+      this.plants.forEach(function (plant) {
+        var now = new Date();
+        var waterNext = new Date(plant.water_next);
+        var timeTilWatering = waterNext - now;
+        if (Math.round(timeTilWatering / (1000 * 60 * 60 * 24)) > 0) {
+          filterdPlants.push(plant);
+        }
+      });
+      return filterdPlants;
+    },
+    thirstyPlants: function thirstyPlants() {
+      var filterdPlants = new Array();
+      this.plants.forEach(function (plant) {
+        var now = new Date();
+        var waterNext = new Date(plant.water_next);
+        var timeTilWatering = waterNext - now;
+        if (Math.round(timeTilWatering / (1000 * 60 * 60 * 24)) <= 0) {
+          filterdPlants.push(plant);
+        }
+      });
+      return filterdPlants;
+    }
+  },
   props: {
     initialPlants: Array
   },
   methods: {
-    createNewPlant: function createNewPlant(name, water, water_interval) {
+    createNewPlant: function createNewPlant() {
       var _this = this;
 
-      window.axios.post('/api/plants', { name: name, water: water, water_interval: water_interval }).then(function (_ref2) {
-        var data = _ref2.data;
+      if (this.addNew) {
+        window.axios.post("/api/plants", {
+          name: this.plant.name,
+          water: this.plant.water,
+          water_interval: this.plant.water_interval
+        }).then(function (_ref2) {
+          var data = _ref2.data;
 
-        _this.plants.push(new Plant(data));
-        console.log(_this);
-        _this.$forceUpdate();
-      });
+          _this.plants.push(new Plant(data));
+        });
+        this.plant.name = "";
+        this.plant.water = "";
+        this.plant.water_interval = "";
+      }
+      this.addNew = !this.addNew;
     },
     deletePlant: function deletePlant(id) {
       var _this2 = this;
@@ -47811,6 +47882,32 @@ function Plant(_ref) {
           return plant.id === id;
         });
         _this2.plants.splice(index, 1);
+      });
+    },
+    waterPlant: function waterPlant(plant) {
+      var _this3 = this;
+
+      var water_next = new Date();
+      water_next.setTime(water_next.getTime() + plant.water_interval * 86400000);
+      window.axios.patch("/api/plants/" + plant.id, {
+        name: plant.name,
+        water: plant.water,
+        water_interval: plant.water_interval,
+        water_next: water_next
+      }).then(function (_ref3) {
+        var data = _ref3.data;
+
+        var index = _this3.plants.findIndex(function (plant) {
+          return plant.id === data.id;
+        });
+        Vue.set(_this3.plants, index, new Plant(data));
+      });
+    },
+    waterAll: function waterAll() {
+      var _this4 = this;
+
+      this.thirstyPlants.forEach(function (plant) {
+        _this4.waterPlant(plant);
       });
     }
   }
@@ -47902,7 +47999,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\nul[data-v-1ff08fc2] {\n  list-style: none;\n  text-align: left;\n  display: inline-block;\n}\n\n", ""]);
+exports.push([module.i, "\nul[data-v-1ff08fc2] {\n  list-style: none;\n  text-align: left;\n  display: inline-block;\n  padding-left: 0px;\n  width: 100%;\n}\n\n", ""]);
 
 // exports
 
@@ -47928,35 +48025,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "PlantList",
   data: function data() {
-    return {
-      addNew: false,
-      plant: { name: '', water: '' }
-    };
+    return {};
   },
 
   props: {
-    msg: String,
-    plants: Array
+    plants: Array,
+    title: String
   },
   components: {
     PlantItem: __WEBPACK_IMPORTED_MODULE_0__PlantItem_vue___default.a
   },
   methods: {
-    AddNewPlant: function AddNewPlant() {
-      if (this.addNew) {
-        this.$emit('createPlant', this.plant.name, this.plant.water, '2018-05-19 17:46:28');
-        this.plant.name = '';
-        this.plant.water = '';
-      }
-      this.addNew = !this.addNew;
-    },
     deletePlant: function deletePlant(id) {
       this.$emit('deletePlant', id);
+    },
+    waterPlant: function waterPlant(plant) {
+      this.$emit('waterPlant', plant);
     }
   }
 });
@@ -47996,7 +48086,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.c-plant-item__actions[data-v-15eb17b7] {\r\n  position: relative;\r\n  -ms-flex-item-align: center;\r\n      align-self: center;\r\n  -ms-flex-negative: 0;\r\n      flex-shrink: 0;\n}\n.c-plant-item[data-v-15eb17b7] {\r\n  padding: 16px 40px;\r\n  background-color: #3f3f3f;\r\n  margin: 15px;\r\n  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n  display: -webkit-box;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: normal;\r\n      -ms-flex-direction: row;\r\n          flex-direction: row;\r\n  -webkit-box-pack: center;\r\n      -ms-flex-pack: center;\r\n          justify-content: center;\r\n  padding-right: 20px;\r\n  padding-left: 30px;\r\n  -webkit-box-pack: justify;\r\n      -ms-flex-pack: justify;\r\n          justify-content: space-between;\r\n  border-radius: 10px;\n}\n.c-pop-up__overlay[data-v-15eb17b7] {\r\n  position: absolute;\r\n  position: fixed;\r\n  height: 100%;\r\n  width: 100%;\r\n  left: 0px;\r\n  top: 0px;\r\n  z-index: 1;\n}\n.c-pop-up[data-v-15eb17b7] {\r\n  position: absolute;\r\n  top: 0px;\r\n  background-color: #262323;\r\n  right: -1px;\n}\n.c-pop-up__ul[data-v-15eb17b7] {\r\n  padding: 10px 15px;\r\n  z-index: 2;\r\n  position: relative;\n}\n.c-pop-up__item[data-v-15eb17b7] {\r\n  list-style: none;\n}\n.c-button[data-v-15eb17b7] {\r\n  background-color: transparent;\r\n  border: none;\r\n  font-size: 18px;\r\n  cursor: pointer;\n}\n.c-button--water[data-v-15eb17b7] {\r\n  color: #1d1d1d;\r\n  height: 50px;\r\n  width: 50px;\r\n  background-color: #2989b6;\r\n  border-radius: 100%;\r\n  margin: 0px 20px;\n}\n.c-button--menu[data-v-15eb17b7] {\r\n  color: #c8c8c8;\n}\n.c-plant-item__subtext[data-v-15eb17b7] {\r\n  color: #bababa;\r\n  font-size: 12px;\n}\n.c-plant-item__title[data-v-15eb17b7] {\r\n  font-size: 18px;\r\n  margin-bottom: 0em;\n}\r\n", ""]);
 
 // exports
 
@@ -48010,15 +48100,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "PlantItem",
   props: {
     plant: Object
   },
+  data: function data() {
+    return {
+      showPopUp: false
+    };
+  },
+
+  computed: {
+    waterNext: function waterNext() {
+      return new Date(this.plant.water_next);
+    },
+    TimetilWatering: function TimetilWatering() {
+      var now = new Date();
+      var timeTilWatering = this.waterNext - now;
+      return Math.round(timeTilWatering / (1000 * 60 * 60 * 24));
+    }
+  },
   methods: {
     del: function del() {
-      this.$emit('del', this.plant.id);
+      this.$emit("del", this.plant.id);
+    },
+    water: function water() {
+      this.$emit("water", this.plant);
     }
   }
 });
@@ -48031,12 +48162,91 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", [
-    _vm._v(_vm._s(_vm.plant.name) + " - " + _vm._s(_vm.plant.water)),
-    _c("button", { on: { click: _vm.del } }, [_vm._v("del")])
+  return _c("li", { staticClass: "c-plant-item" }, [
+    _c("div", { staticClass: "basic-info" }, [
+      _c("p", { staticClass: "c-plant-item__title" }, [
+        _vm._v(_vm._s(_vm.plant.name))
+      ]),
+      _vm._v(" "),
+      _vm.TimetilWatering == 0
+        ? _c("sub", { staticClass: "c-text--warning c-plant-item__subtext" }, [
+            _vm._v("- needs water today")
+          ])
+        : _vm.TimetilWatering < 0
+          ? _c("sub", { staticClass: "c-text--alert c-plant-item__subtext" }, [
+              _vm._v(
+                "- is thirsty since " +
+                  _vm._s(_vm.TimetilWatering * -1) +
+                  " day" +
+                  _vm._s(_vm.TimetilWatering != -1 ? "s" : "")
+              )
+            ])
+          : _vm.TimetilWatering > 0
+            ? _c(
+                "sub",
+                { staticClass: "c-text--notice c-plant-item__subtext" },
+                [
+                  _vm._v(
+                    "needs water in " +
+                      _vm._s(_vm.TimetilWatering) +
+                      " day" +
+                      _vm._s(_vm.TimetilWatering != 1 ? "s" : "") +
+                      " "
+                  )
+                ]
+              )
+            : _vm._e()
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "c-plant-item__actions" }, [
+      _c(
+        "button",
+        { staticClass: "c-button c-button--water", on: { click: _vm.water } },
+        [_c("i", { staticClass: "fas fa-tint" })]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "c-button c-button--menu",
+          on: {
+            click: function($event) {
+              _vm.showPopUp = !_vm.showPopUp
+            }
+          }
+        },
+        [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+      ),
+      _vm._v(" "),
+      _vm.showPopUp
+        ? _c("div", { staticClass: "c-pop-up" }, [
+            _c("div", {
+              staticClass: "c-pop-up__overlay",
+              on: {
+                click: function($event) {
+                  _vm.showPopUp = !_vm.showPopUp
+                }
+              }
+            }),
+            _vm._v(" "),
+            _vm._m(0)
+          ])
+        : _vm._e()
+    ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("ul", { staticClass: "c-pop-up__ul" }, [
+      _c("li", { staticClass: "c-pop-up__item" }, [_c("a", [_vm._v("Edit")])]),
+      _vm._v(" "),
+      _c("li", { staticClass: "c-pop-up__item" }, [_c("a", [_vm._v("Delete")])])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -48055,75 +48265,21 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm.addNew
-      ? _c("form", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.plant.name,
-                expression: "plant.name"
-              }
-            ],
-            attrs: {
-              placeholder: "Name",
-              type: "text",
-              name: "AddNewPlant",
-              id: ""
-            },
-            domProps: { value: _vm.plant.name },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.plant, "name", $event.target.value)
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.plant.water,
-                expression: "plant.water"
-              }
-            ],
-            attrs: {
-              placeholder: "How much water?",
-              type: "text",
-              name: "AddNewPlant",
-              id: ""
-            },
-            domProps: { value: _vm.plant.water },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.plant, "water", $event.target.value)
-              }
-            }
+    _c("div", [
+      _c("h3", [_vm._v(_vm._s(_vm.title))]),
+      _vm._v(" "),
+      _c(
+        "ul",
+        _vm._l(_vm.plants, function(plant, index) {
+          return _c("plant-item", {
+            key: plant.id,
+            tag: "li",
+            attrs: { index: index, plant: plant },
+            on: { del: _vm.deletePlant, water: _vm.waterPlant }
           })
-        ])
-      : _vm._e(),
-    _vm._v(" "),
-    _c("button", { on: { click: _vm.AddNewPlant } }, [_vm._v("Add New Plant")]),
-    _vm._v(" "),
-    _c(
-      "ul",
-      _vm._l(_vm.plants, function(plant, index) {
-        return _c("plant-item", {
-          key: plant.id,
-          tag: "li",
-          attrs: { index: index, plant: plant },
-          on: { del: _vm.deletePlant }
         })
-      })
-    )
+      )
+    ])
   ])
 }
 var staticRenderFns = []
@@ -48144,17 +48300,134 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { attrs: { id: "app" } },
-    [
-      _c("plant-list", {
-        attrs: { plants: _vm.plants },
-        on: { createPlant: _vm.createNewPlant, deletePlant: _vm.deletePlant }
-      })
-    ],
-    1
-  )
+  return _c("div", { attrs: { id: "app" } }, [
+    _c(
+      "button",
+      {
+        staticClass: "c-button c-button--plant",
+        on: { click: _vm.createNewPlant }
+      },
+      [_c("i", { staticClass: "fas fa-leaf" }), _vm._v("Add New Plant")]
+    ),
+    _vm._v(" "),
+    _vm.addNew
+      ? _c(
+          "form",
+          {
+            on: {
+              submit: function($event) {
+                $event.preventDefault()
+              }
+            }
+          },
+          [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.plant.name,
+                  expression: "plant.name"
+                }
+              ],
+              attrs: { placeholder: "Name", type: "text", id: "" },
+              domProps: { value: _vm.plant.name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.plant, "name", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.plant.water,
+                  expression: "plant.water"
+                }
+              ],
+              attrs: { placeholder: "How much water?", type: "text", id: "" },
+              domProps: { value: _vm.plant.water },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.plant, "water", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.plant.water_interval,
+                  expression: "plant.water_interval"
+                }
+              ],
+              attrs: { placeholder: "How often?", type: "text", id: "" },
+              domProps: { value: _vm.plant.water_interval },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.plant, "water_interval", $event.target.value)
+                }
+              }
+            })
+          ]
+        )
+      : _c(
+          "div",
+          [
+            _vm.thirstyPlants.length > 0
+              ? _c(
+                  "div",
+                  [
+                    _c("h3", [_vm._v("Theses plants are thirsty!")]),
+                    _vm._v(" "),
+                    _c("plant-list", {
+                      attrs: { plants: _vm.thirstyPlants },
+                      on: {
+                        deletePlant: _vm.deletePlant,
+                        waterPlant: _vm.waterPlant
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "c-button c-button--water",
+                        on: { click: _vm.waterAll }
+                      },
+                      [
+                        _c("i", { staticClass: "fas fa-tint" }),
+                        _vm._v("water all")
+                      ]
+                    )
+                  ],
+                  1
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _c("plant-list", {
+              attrs: { plants: _vm.wateredPlants },
+              on: { deletePlant: _vm.deletePlant, waterPlant: _vm.waterPlant }
+            })
+          ],
+          1
+        )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true

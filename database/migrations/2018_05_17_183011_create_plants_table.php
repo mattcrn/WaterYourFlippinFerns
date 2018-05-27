@@ -18,7 +18,8 @@ class CreatePlantsTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->integer('water');
-            $table->dateTime('water_interval');
+            $table->dateTime('water_next');
+            $table->integer('water_interval');
         });
     }
 
