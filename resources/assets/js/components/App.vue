@@ -11,7 +11,7 @@
 
       <div v-else>
           
-        <div v-if="thirstyPlants.length > 0">
+<!--         <div v-if="thirstyPlants.length > 0">
 
             <h3>Theses plants are thirsty!</h3>
             <plant-list 
@@ -20,11 +20,9 @@
             @waterPlant="waterPlant">
             </plant-list>
             <button class="c-button c-button--water" @click="waterAll"><i class="fas fa-tint"></i>water all</button>
-        </div>
+        </div> -->
 
-          <hr>
-
-          <plant-list v-bind:plants="wateredPlants"
+          <plant-list v-bind:plants="sortedPlants"
           @deletePlant="deletePlant"
           @waterPlant="waterPlant">
           </plant-list>
@@ -42,6 +40,8 @@ function Plant({ id, water, name, water_interval, water_next }) {
   this.name = name;
   this.water_interval = water_interval;
   this.water_next = water_next;
+  this.timeTilWatering = '';
+  this.isLastThirsty = false;
 }
 import PlantList from "./PlantList.vue";
 import PlantItem from "./PlantItem.vue";
@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       addNew: false,
-      plant: { name: "", water: "", water_interval: ""},
-      plants: this.initialPlants
+      plant: { name: "", water: "", water_interval: "", timeTilWatering: ""},
+      plants: this.initiatePlants(this.initialPlants),
     };
   },
   components: {
@@ -60,30 +60,29 @@ export default {
     PlantItem
   },
   computed: {
-    wateredPlants: function() {
-      let filterdPlants = new Array;
+    sortedPlants: function() {
+      let wateredPlants = new Array;
+      let thirstyPlants = new Array;
       this.plants.forEach(plant => {
+        plant.isLastThirsty = false;
         let now = new Date();
         let waterNext = new Date(plant.water_next);
-        let timeTilWatering = waterNext - now;
-        if(Math.round(timeTilWatering/(1000*60*60*24)) > 0) {
-          filterdPlants.push(plant);
+        plant.timeTilWatering = waterNext - now;
+        if(Math.round(plant.timeTilWatering/(1000*60*60*24)) > 0) {
+          wateredPlants.push(plant);
+        }
+        else if(Math.round(plant.timeTilWatering/(1000*60*60*24)) <= 0) {
+          thirstyPlants.push(plant);
         }
       });
-      return filterdPlants;
+        wateredPlants.sort(function(a, b){return a.timeTilWatering-b.timeTilWatering});
+        thirstyPlants.sort(function(a, b){return a.timeTilWatering-b.timeTilWatering});
+        if(thirstyPlants.length > 0 && wateredPlants.length > 0) {
+          thirstyPlants[thirstyPlants.length - 1].isLastThirsty = true;
+        }
+        Array.prototype.push.apply(thirstyPlants, wateredPlants);
+      return thirstyPlants;
     },
-      thirstyPlants: function() {
-      let filterdPlants = new Array;
-      this.plants.forEach(plant => {
-        let now = new Date();
-        let waterNext = new Date(plant.water_next);
-        let timeTilWatering = waterNext - now;
-        if(Math.round(timeTilWatering/(1000*60*60*24)) <= 0) {
-          filterdPlants.push(plant);
-        }
-      });
-      return filterdPlants;
-    }
   },
   props: {
     initialPlants: Array
@@ -134,6 +133,13 @@ export default {
         this.waterPlant(plant);
       });
     },
+    initiatePlants: function(rawPlants) {
+      let preparedPlants = new Array;
+      rawPlants.forEach(plant => {
+        preparedPlants.push(new Plant(plant));
+      });
+      return preparedPlants;
+    }
   }
 };
 </script>

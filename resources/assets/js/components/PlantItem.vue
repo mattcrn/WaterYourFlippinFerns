@@ -1,9 +1,9 @@
 <template>
-     <li class="c-plant-item">
+     <li :class="['c-plant-item', {'c-plant-item--last-thirsty': plant.isLastThirsty}]">
        <div class="basic-info">
        <p class="c-plant-item__title">{{ plant.name }}</p>
-       <sub v-if="TimetilWatering == 0" class="c-text--warning c-plant-item__subtext">- needs water today</sub>
-       <sub v-else-if="TimetilWatering < 0" class="c-text--alert c-plant-item__subtext">- is thirsty since {{ TimetilWatering * (-1) }} day{{ (TimetilWatering != -1) ? 's' : ''}}</sub>
+       <sub v-if="TimetilWatering == 0" class="c-text--warning c-plant-item__subtext">needs water today</sub>
+       <sub v-else-if="TimetilWatering < 0" class="c-text--alert c-plant-item__subtext">is thirsty since {{ TimetilWatering * (-1) }} day{{ (TimetilWatering != -1) ? 's' : ''}}</sub>
        <sub v-else-if="TimetilWatering > 0"  class="c-text--notice c-plant-item__subtext">needs water in {{ TimetilWatering }} day{{ (TimetilWatering != 1) ? 's' : ''}} </sub>
        </div>
 <!--        <div class="water">
@@ -17,7 +17,7 @@
         <div class="c-pop-up__overlay" @click="showPopUp = !showPopUp"></div>
          <ul class="c-pop-up__ul">
            <li class="c-pop-up__item"><a>Edit</a></li>
-           <li class="c-pop-up__item"><a>Delete</a></li>
+           <li class="c-pop-up__item" @click="del"><a>Delete</a></li>
          </ul>
        </div>
     </div>
@@ -27,7 +27,8 @@
 export default {
   name: "PlantItem",
   props: {
-    plant: Object
+    plant: {
+    }
   },
   data() {
     return {
@@ -74,6 +75,9 @@ export default {
   padding-left: 30px;
   justify-content: space-between;
   border-radius: 10px;
+}
+.c-plant-item--last-thirsty {
+  margin-bottom: 4em;
 }
 .c-pop-up__overlay {
   position: absolute;

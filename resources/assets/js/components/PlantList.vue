@@ -2,12 +2,16 @@
     <div>
         <div>
           <h3>{{ title }}</h3>
-            <ul>
+            <transition-group 
+            name="plant-list" 
+            tag="ul"    
+            enter-active-class="animated bounceInDown"
+            leave-active-class="animated bounceOutRight">
                 <li is="plant-item" v-for="(plant, index) in plants" :key="plant.id" :index="index" v-bind:plant="plant" 
                 @del="deletePlant" 
                 @water="waterPlant"
                 ></li>
-            </ul>
+            </transition-group>
         </div>
     </div>
 </template>
@@ -47,5 +51,8 @@ export default {
     padding-left: 0px;
     width: 100%;
   }
+  .plant-list-move {
+  transition: transform 1s;
+}
 
 </style>

@@ -47792,8 +47792,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 function Plant(_ref) {
   var id = _ref.id,
@@ -47807,6 +47805,8 @@ function Plant(_ref) {
   this.name = name;
   this.water_interval = water_interval;
   this.water_next = water_next;
+  this.timeTilWatering = '';
+  this.isLastThirsty = false;
 }
 
 
@@ -47816,8 +47816,8 @@ function Plant(_ref) {
   data: function data() {
     return {
       addNew: false,
-      plant: { name: "", water: "", water_interval: "" },
-      plants: this.initialPlants
+      plant: { name: "", water: "", water_interval: "", timeTilWatering: "" },
+      plants: this.initiatePlants(this.initialPlants)
     };
   },
 
@@ -47826,29 +47826,31 @@ function Plant(_ref) {
     PlantItem: __WEBPACK_IMPORTED_MODULE_1__PlantItem_vue___default.a
   },
   computed: {
-    wateredPlants: function wateredPlants() {
-      var filterdPlants = new Array();
+    sortedPlants: function sortedPlants() {
+      var wateredPlants = new Array();
+      var thirstyPlants = new Array();
       this.plants.forEach(function (plant) {
+        plant.isLastThirsty = false;
         var now = new Date();
         var waterNext = new Date(plant.water_next);
-        var timeTilWatering = waterNext - now;
-        if (Math.round(timeTilWatering / (1000 * 60 * 60 * 24)) > 0) {
-          filterdPlants.push(plant);
+        plant.timeTilWatering = waterNext - now;
+        if (Math.round(plant.timeTilWatering / (1000 * 60 * 60 * 24)) > 0) {
+          wateredPlants.push(plant);
+        } else if (Math.round(plant.timeTilWatering / (1000 * 60 * 60 * 24)) <= 0) {
+          thirstyPlants.push(plant);
         }
       });
-      return filterdPlants;
-    },
-    thirstyPlants: function thirstyPlants() {
-      var filterdPlants = new Array();
-      this.plants.forEach(function (plant) {
-        var now = new Date();
-        var waterNext = new Date(plant.water_next);
-        var timeTilWatering = waterNext - now;
-        if (Math.round(timeTilWatering / (1000 * 60 * 60 * 24)) <= 0) {
-          filterdPlants.push(plant);
-        }
+      wateredPlants.sort(function (a, b) {
+        return a.timeTilWatering - b.timeTilWatering;
       });
-      return filterdPlants;
+      thirstyPlants.sort(function (a, b) {
+        return a.timeTilWatering - b.timeTilWatering;
+      });
+      if (thirstyPlants.length > 0 && wateredPlants.length > 0) {
+        thirstyPlants[thirstyPlants.length - 1].isLastThirsty = true;
+      }
+      Array.prototype.push.apply(thirstyPlants, wateredPlants);
+      return thirstyPlants;
     }
   },
   props: {
@@ -47909,6 +47911,13 @@ function Plant(_ref) {
       this.thirstyPlants.forEach(function (plant) {
         _this4.waterPlant(plant);
       });
+    },
+    initiatePlants: function initiatePlants(rawPlants) {
+      var preparedPlants = new Array();
+      rawPlants.forEach(function (plant) {
+        preparedPlants.push(new Plant(plant));
+      });
+      return preparedPlants;
     }
   }
 });
@@ -47999,7 +48008,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\nul[data-v-1ff08fc2] {\n  list-style: none;\n  text-align: left;\n  display: inline-block;\n  padding-left: 0px;\n  width: 100%;\n}\n\n", ""]);
+exports.push([module.i, "\nul[data-v-1ff08fc2] {\n    list-style: none;\n    text-align: left;\n    display: inline-block;\n    padding-left: 0px;\n    width: 100%;\n}\n.plant-list-move[data-v-1ff08fc2] {\n  -webkit-transition: -webkit-transform 1s;\n  transition: -webkit-transform 1s;\n  transition: transform 1s;\n  transition: transform 1s, -webkit-transform 1s;\n}\n\n", ""]);
 
 // exports
 
@@ -48012,6 +48021,10 @@ exports.push([module.i, "\nul[data-v-1ff08fc2] {\n  list-style: none;\n  text-al
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlantItem_vue__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlantItem_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__PlantItem_vue__);
+//
+//
+//
+//
 //
 //
 //
@@ -48086,7 +48099,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n.c-plant-item__actions[data-v-15eb17b7] {\r\n  position: relative;\r\n  -ms-flex-item-align: center;\r\n      align-self: center;\r\n  -ms-flex-negative: 0;\r\n      flex-shrink: 0;\n}\n.c-plant-item[data-v-15eb17b7] {\r\n  padding: 16px 40px;\r\n  background-color: #3f3f3f;\r\n  margin: 15px;\r\n  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n  display: -webkit-box;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: normal;\r\n      -ms-flex-direction: row;\r\n          flex-direction: row;\r\n  -webkit-box-pack: center;\r\n      -ms-flex-pack: center;\r\n          justify-content: center;\r\n  padding-right: 20px;\r\n  padding-left: 30px;\r\n  -webkit-box-pack: justify;\r\n      -ms-flex-pack: justify;\r\n          justify-content: space-between;\r\n  border-radius: 10px;\n}\n.c-pop-up__overlay[data-v-15eb17b7] {\r\n  position: absolute;\r\n  position: fixed;\r\n  height: 100%;\r\n  width: 100%;\r\n  left: 0px;\r\n  top: 0px;\r\n  z-index: 1;\n}\n.c-pop-up[data-v-15eb17b7] {\r\n  position: absolute;\r\n  top: 0px;\r\n  background-color: #262323;\r\n  right: -1px;\n}\n.c-pop-up__ul[data-v-15eb17b7] {\r\n  padding: 10px 15px;\r\n  z-index: 2;\r\n  position: relative;\n}\n.c-pop-up__item[data-v-15eb17b7] {\r\n  list-style: none;\n}\n.c-button[data-v-15eb17b7] {\r\n  background-color: transparent;\r\n  border: none;\r\n  font-size: 18px;\r\n  cursor: pointer;\n}\n.c-button--water[data-v-15eb17b7] {\r\n  color: #1d1d1d;\r\n  height: 50px;\r\n  width: 50px;\r\n  background-color: #2989b6;\r\n  border-radius: 100%;\r\n  margin: 0px 20px;\n}\n.c-button--menu[data-v-15eb17b7] {\r\n  color: #c8c8c8;\n}\n.c-plant-item__subtext[data-v-15eb17b7] {\r\n  color: #bababa;\r\n  font-size: 12px;\n}\n.c-plant-item__title[data-v-15eb17b7] {\r\n  font-size: 18px;\r\n  margin-bottom: 0em;\n}\r\n", ""]);
+exports.push([module.i, "\n.c-plant-item__actions[data-v-15eb17b7] {\r\n  position: relative;\r\n  -ms-flex-item-align: center;\r\n      align-self: center;\r\n  -ms-flex-negative: 0;\r\n      flex-shrink: 0;\n}\n.c-plant-item[data-v-15eb17b7] {\r\n  padding: 16px 40px;\r\n  background-color: #3f3f3f;\r\n  margin: 15px;\r\n  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\r\n  display: -webkit-box;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: normal;\r\n      -ms-flex-direction: row;\r\n          flex-direction: row;\r\n  -webkit-box-pack: center;\r\n      -ms-flex-pack: center;\r\n          justify-content: center;\r\n  padding-right: 20px;\r\n  padding-left: 30px;\r\n  -webkit-box-pack: justify;\r\n      -ms-flex-pack: justify;\r\n          justify-content: space-between;\r\n  border-radius: 10px;\n}\n.c-plant-item--last-thirsty[data-v-15eb17b7] {\r\n  margin-bottom: 4em;\n}\n.c-pop-up__overlay[data-v-15eb17b7] {\r\n  position: absolute;\r\n  position: fixed;\r\n  height: 100%;\r\n  width: 100%;\r\n  left: 0px;\r\n  top: 0px;\r\n  z-index: 1;\n}\n.c-pop-up[data-v-15eb17b7] {\r\n  position: absolute;\r\n  top: 0px;\r\n  background-color: #262323;\r\n  right: -1px;\n}\n.c-pop-up__ul[data-v-15eb17b7] {\r\n  padding: 10px 15px;\r\n  z-index: 2;\r\n  position: relative;\n}\n.c-pop-up__item[data-v-15eb17b7] {\r\n  list-style: none;\n}\n.c-button[data-v-15eb17b7] {\r\n  background-color: transparent;\r\n  border: none;\r\n  font-size: 18px;\r\n  cursor: pointer;\n}\n.c-button--water[data-v-15eb17b7] {\r\n  color: #1d1d1d;\r\n  height: 50px;\r\n  width: 50px;\r\n  background-color: #2989b6;\r\n  border-radius: 100%;\r\n  margin: 0px 20px;\n}\n.c-button--menu[data-v-15eb17b7] {\r\n  color: #c8c8c8;\n}\n.c-plant-item__subtext[data-v-15eb17b7] {\r\n  color: #bababa;\r\n  font-size: 12px;\n}\n.c-plant-item__title[data-v-15eb17b7] {\r\n  font-size: 18px;\r\n  margin-bottom: 0em;\n}\r\n", ""]);
 
 // exports
 
@@ -48126,7 +48139,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "PlantItem",
   props: {
-    plant: Object
+    plant: {}
   },
   data: function data() {
     return {
@@ -48162,88 +48175,109 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", { staticClass: "c-plant-item" }, [
-    _c("div", { staticClass: "basic-info" }, [
-      _c("p", { staticClass: "c-plant-item__title" }, [
-        _vm._v(_vm._s(_vm.plant.name))
-      ]),
-      _vm._v(" "),
-      _vm.TimetilWatering == 0
-        ? _c("sub", { staticClass: "c-text--warning c-plant-item__subtext" }, [
-            _vm._v("- needs water today")
-          ])
-        : _vm.TimetilWatering < 0
-          ? _c("sub", { staticClass: "c-text--alert c-plant-item__subtext" }, [
-              _vm._v(
-                "- is thirsty since " +
-                  _vm._s(_vm.TimetilWatering * -1) +
-                  " day" +
-                  _vm._s(_vm.TimetilWatering != -1 ? "s" : "")
-              )
-            ])
-          : _vm.TimetilWatering > 0
+  return _c(
+    "li",
+    {
+      class: [
+        "c-plant-item",
+        { "c-plant-item--last-thirsty": _vm.plant.isLastThirsty }
+      ]
+    },
+    [
+      _c("div", { staticClass: "basic-info" }, [
+        _c("p", { staticClass: "c-plant-item__title" }, [
+          _vm._v(_vm._s(_vm.plant.name))
+        ]),
+        _vm._v(" "),
+        _vm.TimetilWatering == 0
+          ? _c(
+              "sub",
+              { staticClass: "c-text--warning c-plant-item__subtext" },
+              [_vm._v("needs water today")]
+            )
+          : _vm.TimetilWatering < 0
             ? _c(
                 "sub",
-                { staticClass: "c-text--notice c-plant-item__subtext" },
+                { staticClass: "c-text--alert c-plant-item__subtext" },
                 [
                   _vm._v(
-                    "needs water in " +
-                      _vm._s(_vm.TimetilWatering) +
+                    "is thirsty since " +
+                      _vm._s(_vm.TimetilWatering * -1) +
                       " day" +
-                      _vm._s(_vm.TimetilWatering != 1 ? "s" : "") +
-                      " "
+                      _vm._s(_vm.TimetilWatering != -1 ? "s" : "")
                   )
                 ]
               )
-            : _vm._e()
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "c-plant-item__actions" }, [
-      _c(
-        "button",
-        { staticClass: "c-button c-button--water", on: { click: _vm.water } },
-        [_c("i", { staticClass: "fas fa-tint" })]
-      ),
+            : _vm.TimetilWatering > 0
+              ? _c(
+                  "sub",
+                  { staticClass: "c-text--notice c-plant-item__subtext" },
+                  [
+                    _vm._v(
+                      "needs water in " +
+                        _vm._s(_vm.TimetilWatering) +
+                        " day" +
+                        _vm._s(_vm.TimetilWatering != 1 ? "s" : "") +
+                        " "
+                    )
+                  ]
+                )
+              : _vm._e()
+      ]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "c-button c-button--menu",
-          on: {
-            click: function($event) {
-              _vm.showPopUp = !_vm.showPopUp
-            }
-          }
-        },
-        [_c("i", { staticClass: "fas fa-ellipsis-v" })]
-      ),
-      _vm._v(" "),
-      _vm.showPopUp
-        ? _c("div", { staticClass: "c-pop-up" }, [
-            _c("div", {
-              staticClass: "c-pop-up__overlay",
-              on: {
-                click: function($event) {
-                  _vm.showPopUp = !_vm.showPopUp
-                }
+      _c("div", { staticClass: "c-plant-item__actions" }, [
+        _c(
+          "button",
+          { staticClass: "c-button c-button--water", on: { click: _vm.water } },
+          [_c("i", { staticClass: "fas fa-tint" })]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "c-button c-button--menu",
+            on: {
+              click: function($event) {
+                _vm.showPopUp = !_vm.showPopUp
               }
-            }),
-            _vm._v(" "),
-            _vm._m(0)
-          ])
-        : _vm._e()
-    ])
-  ])
+            }
+          },
+          [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+        ),
+        _vm._v(" "),
+        _vm.showPopUp
+          ? _c("div", { staticClass: "c-pop-up" }, [
+              _c("div", {
+                staticClass: "c-pop-up__overlay",
+                on: {
+                  click: function($event) {
+                    _vm.showPopUp = !_vm.showPopUp
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("ul", { staticClass: "c-pop-up__ul" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c(
+                  "li",
+                  { staticClass: "c-pop-up__item", on: { click: _vm.del } },
+                  [_c("a", [_vm._v("Delete")])]
+                )
+              ])
+            ])
+          : _vm._e()
+      ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("ul", { staticClass: "c-pop-up__ul" }, [
-      _c("li", { staticClass: "c-pop-up__item" }, [_c("a", [_vm._v("Edit")])]),
-      _vm._v(" "),
-      _c("li", { staticClass: "c-pop-up__item" }, [_c("a", [_vm._v("Delete")])])
+    return _c("li", { staticClass: "c-pop-up__item" }, [
+      _c("a", [_vm._v("Edit")])
     ])
   }
 ]
@@ -48265,21 +48299,33 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", [
-      _c("h3", [_vm._v(_vm._s(_vm.title))]),
-      _vm._v(" "),
-      _c(
-        "ul",
-        _vm._l(_vm.plants, function(plant, index) {
-          return _c("plant-item", {
-            key: plant.id,
-            tag: "li",
-            attrs: { index: index, plant: plant },
-            on: { del: _vm.deletePlant, water: _vm.waterPlant }
+    _c(
+      "div",
+      [
+        _c("h3", [_vm._v(_vm._s(_vm.title))]),
+        _vm._v(" "),
+        _c(
+          "transition-group",
+          {
+            attrs: {
+              name: "plant-list",
+              tag: "ul",
+              "enter-active-class": "animated bounceInDown",
+              "leave-active-class": "animated bounceOutRight"
+            }
+          },
+          _vm._l(_vm.plants, function(plant, index) {
+            return _c("plant-item", {
+              key: plant.id,
+              tag: "li",
+              attrs: { index: index, plant: plant },
+              on: { del: _vm.deletePlant, water: _vm.waterPlant }
+            })
           })
-        })
-      )
-    ])
+        )
+      ],
+      1
+    )
   ])
 }
 var staticRenderFns = []
@@ -48388,40 +48434,8 @@ var render = function() {
       : _c(
           "div",
           [
-            _vm.thirstyPlants.length > 0
-              ? _c(
-                  "div",
-                  [
-                    _c("h3", [_vm._v("Theses plants are thirsty!")]),
-                    _vm._v(" "),
-                    _c("plant-list", {
-                      attrs: { plants: _vm.thirstyPlants },
-                      on: {
-                        deletePlant: _vm.deletePlant,
-                        waterPlant: _vm.waterPlant
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        staticClass: "c-button c-button--water",
-                        on: { click: _vm.waterAll }
-                      },
-                      [
-                        _c("i", { staticClass: "fas fa-tint" }),
-                        _vm._v("water all")
-                      ]
-                    )
-                  ],
-                  1
-                )
-              : _vm._e(),
-            _vm._v(" "),
-            _c("hr"),
-            _vm._v(" "),
             _c("plant-list", {
-              attrs: { plants: _vm.wateredPlants },
+              attrs: { plants: _vm.sortedPlants },
               on: { deletePlant: _vm.deletePlant, waterPlant: _vm.waterPlant }
             })
           ],

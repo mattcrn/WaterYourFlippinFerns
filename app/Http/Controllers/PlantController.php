@@ -44,7 +44,7 @@ class PlantController extends Controller
         $plant->name = $request->name;
         $plant->water = $request->water;
         $plant->water_interval = $request->water_interval;
-        $plant->water_next = date('2018-05-21 21:35:58');
+        $plant->water_next = date('2018-05-20 21:35:58');
         $plant->save();
 
         return response($plant->jsonSerialize(), Response::HTTP_CREATED);
